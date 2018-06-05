@@ -12,7 +12,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
 
-import io.agora.openvcall.R;
+import com.skill.room.R;
+
 import io.agora.rtc.Constants;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;

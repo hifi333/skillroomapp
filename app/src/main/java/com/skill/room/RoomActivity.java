@@ -38,7 +38,6 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.agora.openvcall.R;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
 

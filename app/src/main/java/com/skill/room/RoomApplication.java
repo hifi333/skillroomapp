@@ -17,7 +17,14 @@ public class RoomApplication extends Application {
 
     private final static Logger log = LoggerFactory.getLogger(RoomApplication.class);
 
-    public WebView samRoomWebView = null;
+    public static WebView samRoomWebView = null;
+
+
+    public static  String loginUserId = "shm3";
+    public static  String loginSessionToken = "Sshm3tempsessiontoken1526995290285";
+    public static  String loginRole = "0";
+    public static  String loginClassName = "alessioid001a";
+    public static  String workmodel = "1";
 
 
     private LocalEngineWorkerThread mWorkerThread;

@@ -17,15 +17,30 @@ import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.skill.voice_vedio.ConstantApp;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Arrays;
 
-import io.agora.openvcall.R;
+import javax.net.ssl.HostnameVerifier;
+
+import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by eviewlake on 2018/5/21.
@@ -46,160 +61,101 @@ public class AppLoginActivity extends AppCompatActivity {
 
     }
 
-    public void onclick_button(View view){
+    public void onclick_login(View view){
 
-        Intent i = new Intent(AppLoginActivity.this, RoomActivity.class);
-        i.putExtra("userId", "abc");
+        final String userid =((EditText)this.findViewById(R.id.editText_username)).getText().toString();
+        String password =((EditText)this.findViewById(R.id.editText_password)).getText().toString();
 
-        startActivity(i);
+        if(userid.length()>0) {  //检验合法
 
-
-    }
-
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-        final WebView  samwebview = new WebView(this.getApplicationContext());
+            OkHttpClient client = new OkHttpClient();
 
 
-        samwebview.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error){
 
-                //handler.cancel(); 默认的处理方式，WebView变成空白页
-                handler.proceed();  //接受证书, 这样https 都能打开了.
+//            HttpsCustomTrust ct = new HttpsCustomTrust();
+
+//            OkHttpClient client = new OkHttpClient.Builder()
+//                    .addInterceptor(chain -> {
+//                        Request request = chain.request().newBuilder()
+//                                .addHeader("X-CRM-Application-Id", RequestConstants.APPLICATION_ID)
+//                                .addHeader("X-CRM-Version", RequestConstants.VERSION)
+//                                .addHeader("Content-Type", RequestConstants.JSON_TYPE)
+//                                .build();
+//                        return chain.proceed(request);
+//                    })
+//                    .sslSocketFactory(ct.sslSocketFactory, ct.trustManager)
+//                    .hostnameVerifier((s, sslSession) -> true)
+//                    .build();
+
+
+
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("userid", userid);
+                jsonObject.put("password", password);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
 
-                System.out.println("----------哈啊哈, 终于load 成功了.");
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody formBody = RequestBody.create(JSON, jsonObject.toString());
 
-                samwebview.loadUrl("javascript:hi()");
+//            FormBody.Builder formBody = new RequestBody().Builder();//创建表单请求体,  Content-Type=application/x-www-form-urlencoded
+//            formBody.add("userId",userId);//传递键值对参数
+//            formBody.add("password",password);//传递键值对参数
 
+            Request request = new Request.Builder()
+//                    .url("https://122.152.210.96:8443/login")
+                    .url("http://122.152.210.96/login")
+                    .post(formBody)//传递POST请求体, 同时决定用POST
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
 
-                String loginUserId = "shm3";
-                String loginSessionToken = "Sshm3tempsessiontoken1526995290285";
-                String loginRole = "0";
-                String loginClassName = "alessioid001a";
-                String workmodel = "1";
+                    //((EditText)findViewById(R.id.editText_username)).setText("login error");
 
-                samwebview.loadUrl("javascript:appcallthis('"
-                        +loginUserId + "','"
-                        +loginSessionToken + "','"
-                        +loginRole + "','"
-                        +loginClassName + "','"
-                        +workmodel
-                        + "')");
-
-                System.out.println("-------------- to call js method ..ok");
-
-
-
-            }
-
-      });
-
-        samwebview.getSettings().setJavaScriptEnabled(true);
-        samwebview.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-
-        samwebview.loadUrl("https://192.168.1.6:8443/index_app.html");
-
-//        samwebview.loadUrl("http://www.yahoo.com");
-
-        ((RoomApplication)this.getApplication()).samRoomWebView = samwebview;
-
-        System.out.println("-------------- cached webiew ok");
-
-
-        //请求权限啊...
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isFinishing()) {
-                    return;
+                    System.out.println("login failed:" + e.getMessage());
                 }
 
-                boolean checkPermissionResult = checkSelfPermissions();
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {//回调的方法执行在子线程。
 
-                if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.M)) {
-                    // so far we do not use OnRequestPermissionsResultCallback
+                        String loginSessionToken = response.body().string();
+
+                        System.out.println("loginSessionToken" + loginSessionToken);
+
+                        if(loginSessionToken.length() >0) {
+                            Intent i = new Intent(AppLoginActivity.this, LessonActivity.class);
+                            i.putExtra("loginSessionToken", loginSessionToken);
+
+
+                            RoomApplication.loginUserId = userid;
+                            RoomApplication.loginRole = "0";
+                            RoomApplication.loginSessionToken = loginSessionToken;
+
+
+                            startActivity(i);
+                        }else
+                        {
+                            System.out.println( userid + " login没有拿到token, 请坚持用户名或密码是否正确.");
+
+                        }
+
+                    }else
+                        System.out.println("response.isSuccessful() failed:" + response.isSuccessful());
+
                 }
-            }
-        }, 500);
+            });
 
 
-
-
-
-    }
-
-
-
-    private boolean checkSelfPermissions() {
-        return checkSelfPermission(Manifest.permission.RECORD_AUDIO, ConstantApp.PERMISSION_REQ_ID_RECORD_AUDIO) &&
-                checkSelfPermission(Manifest.permission.CAMERA, ConstantApp.PERMISSION_REQ_ID_CAMERA) &&
-                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, ConstantApp.PERMISSION_REQ_ID_WRITE_EXTERNAL_STORAGE);
-    }
-
-    public boolean checkSelfPermission(String permission, int requestCode) {
-        log.debug("checkSelfPermission " + permission + " " + requestCode);
-        if (ContextCompat.checkSelfPermission(this,
-                permission)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{permission},
-                    requestCode);
-            return false;
         }
 
-        if (Manifest.permission.CAMERA.equals(permission)) {
-            ((RoomApplication) getApplication()).initWorkerThread();
-        }
-        return true;
+
+
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
-        log.debug("onRequestPermissionsResult " + requestCode + " " + Arrays.toString(permissions) + " " + Arrays.toString(grantResults));
-        switch (requestCode) {
-            case ConstantApp.PERMISSION_REQ_ID_RECORD_AUDIO: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    checkSelfPermission(Manifest.permission.CAMERA, ConstantApp.PERMISSION_REQ_ID_CAMERA);
-                } else {
-                    finish();
-                }
-                break;
-            }
-            case ConstantApp.PERMISSION_REQ_ID_CAMERA: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, ConstantApp.PERMISSION_REQ_ID_WRITE_EXTERNAL_STORAGE);
-                    ((RoomApplication) getApplication()).initWorkerThread();
-                } else {
-                    finish();
-                }
-                break;
-            }
-            case ConstantApp.PERMISSION_REQ_ID_WRITE_EXTERNAL_STORAGE: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                } else {
-                    finish();
-                }
-                break;
-            }
-        }
-    }
-
-
-
-
 
 
 }
