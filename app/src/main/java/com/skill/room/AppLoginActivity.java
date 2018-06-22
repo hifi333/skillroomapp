@@ -24,6 +24,7 @@ import com.skill.voice_vedio.ConstantApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,8 +124,14 @@ public class AppLoginActivity extends AppCompatActivity {
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {//回调的方法执行在子线程。
 
-                        String loginSessionToken = response.body().string();
+                        String loginSessionToken = "";
 
+                        try {
+                            JSONObject a = new JSONObject(response.body().string());
+
+                            loginSessionToken = a.getString("loginSessionToken");
+
+                        }catch (Exception ee) {ee.printStackTrace();}
                         System.out.println("loginSessionToken" + loginSessionToken);
 
                         if(loginSessionToken.length() >0) {

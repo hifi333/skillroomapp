@@ -1,5 +1,6 @@
 package com.skill.room;
 
+import android.app.Application;
 import android.content.Intent;
 import android.webkit.JavascriptInterface;
 
@@ -26,14 +27,14 @@ public class JsCallbackObject extends Object {
 
     @JavascriptInterface
     public void joinRoom(final  String  loginClassName, final String workmodel) {
-        System.out.println("JS调用了Android的hello方法:" + loginClassName + " workmode:"  + workmodel);
+        System.out.println("JS调用了Android的hello方法:" + loginClassName + " workmode:" + workmodel);
 
 //        String loginClassName = "alessioid001a";
 //                String workmodel = "1";
 
 
         RoomApplication.loginClassName = loginClassName;
-        RoomApplication.workmodel =workmodel;
+        RoomApplication.workmodel = workmodel;
 
 
 //
@@ -51,22 +52,21 @@ public class JsCallbackObject extends Object {
 
 
                 RoomApplication.samRoomWebView.loadUrl("javascript:appcallthis('"
-                        +loginUserId + "','"
-                        +loginSessionToken + "','"
-                        +loginRole + "','"
-                        +loginClassName + "','"
-                        +workmodel
+                        + loginUserId + "','"
+                        + loginSessionToken + "','"
+                        + loginRole + "','"
+                        + loginClassName + "','"
+                        + workmodel
                         + "')");
 
                 System.out.println("-------------- to call whiteboards js api..ok");
-
 
 
                 //bring up room Activity
 
                 System.out.println("-----start room Activiy by Singlemodel Aciton: com.skill.room.singleroom");
 
-                Intent i = new Intent(parent,RoomActivity.class);
+                Intent i = new Intent(parent, RoomActivity.class);
 
                 //i.setAction("com.skill.room.singleroom");
 
@@ -76,10 +76,52 @@ public class JsCallbackObject extends Object {
         });
 
 
-
-
-
-
     }
 
+
+
+        @JavascriptInterface
+        public void joinVideo(final String channel, final String uid) {
+
+            System.out.println("JS调用了AndroidAPP: joinVedio:" + channel + "," + uid);
+
+            parent.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // refresh ui 的操作代码
+                    RoomApplication.samRoomActivity.onclick_leaveroom(channel,uid);
+                }
+            });
+     }
+
+
+
+    @JavascriptInterface
+    public void muteSpeaker() {
+
+        System.out.println("JS调用了AndroidAPP: muteSpeaker" );
+
+        parent.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // refresh ui 的操作代码
+                RoomApplication.samRoomActivity.onclick_mutevoice();
+            }
+        });
+    }
+
+
+    @JavascriptInterface
+    public void mutecam() {
+
+        System.out.println("JS调用了AndroidAPP: mutecam");
+
+        parent.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // refresh ui 的操作代码
+                RoomApplication.samRoomActivity.onclick_mutecamara();
+            }
+        });
+    }
 }

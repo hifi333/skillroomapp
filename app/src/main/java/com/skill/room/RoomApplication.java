@@ -19,6 +19,8 @@ public class RoomApplication extends Application {
 
     public static WebView samRoomWebView = null;
 
+    public static RoomActivity samRoomActivity = null;
+
 
     public static  String loginUserId = "shm3";
     public static  String loginSessionToken = "Sshm3tempsessiontoken1526995290285";

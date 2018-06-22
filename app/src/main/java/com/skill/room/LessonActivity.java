@@ -65,7 +65,7 @@ public class LessonActivity extends AppCompatActivity {
 
 
         //注册roomActivity 的本地对象给lessionh5, 当选中课堂后, 回调回来, 进入相应的roomActivity, 必须在loadURL之前啊.
-        System.out.println("---------注册JsCallbackObject 给webview: as " + "skillroom");
+        System.out.println("---------注册JsCallbackObject 给Lessonwebview: as " + "skillroom");
         lesstableView.addJavascriptInterface(new JsCallbackObject(this), "skillroom");//JsCallbackObject类的一个实例,映射到js的skillroom对象, 在js的方法里就可以直接用了.
 
 
@@ -234,6 +234,12 @@ public class LessonActivity extends AppCompatActivity {
             }
 
       });
+
+
+        //注册roomActivity 的本地对象给roomwhiteboard, 必须在loadURL之前啊.
+        System.out.println("---------注册JsCallbackObject 给Lessonwebview: as " + "skillroom");
+        samwebview.addJavascriptInterface(new JsCallbackObject(this), "skillroom");//JsCallbackObject类的一个实例,映射到js的skillroom对象, 在js的方法里就可以直接用了.
+
 
         samwebview.getSettings().setJavaScriptEnabled(true);
         samwebview.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);

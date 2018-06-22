@@ -80,7 +80,6 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
 
         findViewById(R.id.vedio_scrollView1).bringToFront();
-        findViewById(R.id.commandview).bringToFront();
 
 
         getLocalEngineWorkerThread().eventHandler().addEventHandler(this);
@@ -124,8 +123,8 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 //        log.debug("engine join channel ");
 
 
-        onclick_leaveroom(null);
 
+        RoomApplication.samRoomActivity = this;
     }
 
     protected final LocalEngineWorkerThread getLocalEngineWorkerThread() {
@@ -174,11 +173,14 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
                     return;
                 }
 
+                userVedioList.clear();  //我已经退出啦, 别人的视频我也看不到了, 关闭所有本地窗口.
+                isNowJoinroom = false;
 
-                int usernumber = Integer.parseInt(userId);
-
-                userVedioList.remove(usernumber);
-
+//
+//                int usernumber = Integer.parseInt(userId);
+//
+//                userVedioList.remove(usernumber);
+//
                 updateVedioBar();
 
 
@@ -285,7 +287,7 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
     }
 
-    public void onclick_leaveroom(View view){
+    public void onclick_leaveroom(String channel, String uid){
         //决定加入房间, 浙江触发Engine 事件啊. 本地会触发, 在远程的同学的Engine 也会触发.
 
         if(isNowJoinroom) {
@@ -305,8 +307,8 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
             this.userVedioList.put(0,surfaceV);
 
-            int usernumber = Integer.parseInt(this.userId);
-            getLocalEngineWorkerThread().getRtcEngine().joinChannel(null,getLocalEngineWorkerThread().getEngineConfig().mChannel, "skill",usernumber);
+            int usernumber = Integer.parseInt(uid);
+            getLocalEngineWorkerThread().getRtcEngine().joinChannel(null,channel, "skill",usernumber);
 
             this.isNowJoinroom = true;
 
@@ -317,7 +319,7 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
 
 
-    public void onclick_mutecamara(View view) {
+    public void onclick_mutecamara() {
 
 
         if(isNowVedioEnable) {
@@ -336,7 +338,7 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
 
 
-    public void onclick_mutevoice(View view) {
+    public void onclick_mutevoice() {
 
 
         if(isNowVoiceEnanble) {
