@@ -1,7 +1,10 @@
 package com.skill.room;
 
 import android.Manifest;
+import android.bluetooth.le.AdvertiseCallback;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.SurfaceView;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -23,6 +27,7 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import com.skill.room.RoomApplication;
 import com.skill.voice_vedio.ConstantApp;
@@ -58,12 +63,14 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        System.out.println("每次点击上课， 都是重新创建的roomActivity。。。。。。  OnCreate。。。。。。。。。。");
         getSupportActionBar().hide();
 
         setContentView(R.layout.room);
 //
 //
         WebView samwebview =  ((RoomApplication)this.getApplication()).samRoomWebView;
+
 
 
         FrameLayout samroommain = (FrameLayout) findViewById(R.id.samroommain);
@@ -79,10 +86,10 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
 
 
-        findViewById(R.id.vedio_scrollView1).bringToFront();
+       // findViewById(R.id.vedio_scrollView1).bringToFront();
 
 
-        getLocalEngineWorkerThread().eventHandler().addEventHandler(this);
+        getLocalEngineWorkerThread().eventHandler().addEventHandler(this);//有添加， 就要有删除啊。。。
 
 //        SurfaceView surfaceV = RtcEngine.CreateRendererView(getApplicationContext());
 //        getLocalEngineWorkerThread().getRtcEngine().setupLocalVideo(new VideoCanvas(surfaceV,
@@ -127,6 +134,36 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
         RoomApplication.samRoomActivity = this;
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        System.out.println("*************************back , distroy this RoomActivity!!!");
+
+        FrameLayout samroommain = (FrameLayout) findViewById(R.id.samroommain);
+        if(samroommain!=null )samroommain.removeAllViews();
+        //消失那个存放在APPlication 全局的webView for whiteboard 的Parent refer。  这样可以下个roomActivity 创建的时候再次加入。
+        getLocalEngineWorkerThread().eventHandler().removeEventHandler(this);//有添加， 就要有删除啊。。。
+
+        getLocalEngineWorkerThread().getRtcEngine().leaveChannel();// 退出这个教师了， 视频也要退出。
+
+
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+//        FrameLayout samroommain = (FrameLayout) findViewById(R.id.samroommain);
+//        if(samroommain!=null )samroommain.removeAllViews();
+//        //消失那个存放在APPlication 全局的webView for whiteboard 的Parent refer。  这样可以下个roomActivity 创建的时候再次加入。
+//        getLocalEngineWorkerThread().eventHandler().removeEventHandler(this);//有添加， 就要有删除啊。。。
+
+
+    }
+
     protected final LocalEngineWorkerThread getLocalEngineWorkerThread() {
         return ((RoomApplication) getApplication()).getWorkerThread();
     }
@@ -148,9 +185,9 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
 
                 if(userVedioList.get(0)!=null)
-
                 {
                     userVedioList.put(uid, userVedioList.get(0));
+                    userVedioList.remove(0);
                 }
                 updateVedioBar();
 
@@ -227,13 +264,57 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
     synchronized private void  updateVedioBar(){
 
 
+        ScrollView sv=  (ScrollView)findViewById(R.id.samvideohostwindow);
+
+        if(sv ==null ) {
+//        HorizontalScrollView aa = new HorizontalScrollView(this.getApplicationContext());
+            sv = new ScrollView(this.getApplicationContext());
+            sv.setId(R.id.samvideohostwindow);
+
+            FrameLayout.LayoutParams svlayoutParams = new FrameLayout.LayoutParams(200,600);
+            svlayoutParams.gravity = Gravity.CENTER_VERTICAL | Gravity.RIGHT;
+            svlayoutParams.rightMargin=5;
+            sv.setLayoutParams(svlayoutParams);
+
+            ((FrameLayout) findViewById(R.id.samroommain)).addView(sv);
+            sv.bringToFront();
+            sv.setBackgroundColor(Color.BLUE);
+
+
+            //设置window 里面的头像布局。
+            LinearLayout hostpanel = new LinearLayout(this.getApplicationContext());
+            hostpanel.setId(R.id.samvideohostpanel);
+
+            LinearLayout.LayoutParams hostpanellayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+//            hostpanellayoutParams.setLayoutDirection(LinearLayout.VERTICAL);
+            hostpanel.setOrientation(LinearLayout.VERTICAL);
+            hostpanel.setLayoutParams(hostpanellayoutParams);
+
+            sv.addView(hostpanel);
+
+        }
+
+
+
+
+
+        //根据实际的视频window 多少来调整scrollview的宽度， 但有个最大值， 超出来就滚动显示了。
+        int scroolview_height = this.userVedioList.size()*200;
+        if(scroolview_height >=600)  scroolview_height= 610;  //这个最大值， 后面要根据具体设备的宽度来定。
+
+        System.out.println("heigt...." + scroolview_height);
+        sv.getLayoutParams().height = scroolview_height;
+
 
         //这时候, 这个surfaceV  view 已经有了远程client 的头像啦.  该把这个view 布局到哪里呢?
-        LinearLayout kk = (LinearLayout) findViewById(R.id.samvedioviewfly);
+//        LinearLayout kk = (LinearLayout) findViewById(R.id.samvedioviewfly);
 
-        kk.removeAllViews();
 
+        LinearLayout  hostpanel =  (LinearLayout) findViewById(R.id.samvideohostpanel);
+        hostpanel.removeAllViews();
         Iterator iterator = this.userVedioList.keySet().iterator();
+        int k=0;
         while (iterator.hasNext()) {
 
             int uid = (int)iterator.next();
@@ -241,10 +322,19 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
             {
                 SurfaceView surfaceV = this.userVedioList.get(uid);
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                        200, LinearLayout.LayoutParams.MATCH_PARENT);
+                        LinearLayout.LayoutParams.MATCH_PARENT, 200);
+
+                layoutParams.setMargins(0, 0,0, 5);
+
+//                layoutParams.setLayoutDirection(LinearLayout.VERTICAL);
                 surfaceV.setLayoutParams(layoutParams);
 
-                kk.addView(surfaceV);
+
+                  hostpanel.addView(surfaceV);
+
+                k++;
+                System.out.println("add surfaceV...." + surfaceV.toString());
+
             }
 
         }
@@ -318,9 +408,21 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
     }
 
 
+    public void onclick_quiteclassroom() {
 
+
+        Intent intent = new Intent();
+        Bundle bundle = new Bundle();
+        bundle.putString("data", "samroomdata");
+//        bundle.putParcelable("data", bean);
+        intent.putExtras(bundle);
+        setResult(RESULT_OK, intent);
+        finish();
+
+
+
+    }
     public void onclick_mutecamara() {
-
 
         if(isNowVedioEnable) {
             getLocalEngineWorkerThread().getRtcEngine().disableVideo();
@@ -354,6 +456,37 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
 
     }
+
+
+    public void onclick_hidevideowin() {
+
+        ScrollView sv=  (ScrollView)findViewById(R.id.samvideohostwindow);
+
+        System.out.println("hide video win");
+
+//        sv.setVisibility(View.VISIBLE);
+//        sv.setVisibility(View.INVISIBLE);
+
+          if(sv.getVisibility() == View.VISIBLE)
+              sv.setVisibility(View.INVISIBLE);
+          else if(sv.getVisibility() == View.INVISIBLE)
+              sv.setVisibility(View.VISIBLE);
+
+//
+//        if(isNowVoiceEnanble) {
+//            getLocalEngineWorkerThread().getRtcEngine().muteLocalAudioStream(true);
+//
+//            this.isNowVoiceEnanble = false;
+//        }
+//        else {
+//            getLocalEngineWorkerThread().getRtcEngine().muteLocalAudioStream(false);
+//            this.isNowVoiceEnanble = true;
+//
+//        }
+
+
+    }
+
 
 
 

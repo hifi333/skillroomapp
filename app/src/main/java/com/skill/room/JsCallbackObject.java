@@ -59,18 +59,23 @@ public class JsCallbackObject extends Object {
                         + workmodel
                         + "')");
 
-                System.out.println("-------------- to call whiteboards js api..ok");
+                System.out.println("-------------- to call whiteboards js api..ok: __________" + loginClassName);
 
 
                 //bring up room Activity
 
-                System.out.println("-----start room Activiy by Singlemodel Aciton: com.skill.room.singleroom");
+                System.out.println("-----start room Activiy by Intent(parent, RoomActivity.class);");
 
                 Intent i = new Intent(parent, RoomActivity.class);
 
+
+                parent.startActivityForResult(i, 0);
+
+
+
                 //i.setAction("com.skill.room.singleroom");
 
-                parent.startActivity(i);
+//                parent.startActivity(i);
 
             }
         });
@@ -124,4 +129,36 @@ public class JsCallbackObject extends Object {
             }
         });
     }
+
+    @JavascriptInterface
+    public void hidevideowin() {
+
+        System.out.println("JS调用了AndroidAPP: hidevideowin");
+
+        parent.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // refresh ui 的操作代码
+                RoomApplication.samRoomActivity.onclick_hidevideowin();
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void quiteclassroom() {
+
+        System.out.println("JS调用了AndroidAPP: hidevideowin");
+
+        parent.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // refresh ui 的操作代码
+                RoomApplication.samRoomActivity.onclick_quiteclassroom();
+            }
+        });
+    }
+
+
+
+
 }

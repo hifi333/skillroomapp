@@ -15,14 +15,13 @@
         android:layout_weight="3">
 
         <ImageView
-            android:id="@+id/imageView_logo"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:id="@+id/loginimageivewLogo"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="20dp"
-            app:srcCompat="@drawable/rounded_bg_blue" />
+            android:layout_marginTop="10dp" />
 
         <TextView
             android:id="@+id/tonewregister"
@@ -71,7 +70,7 @@
             android:layout_gravity="left|center_horizontal"
             android:layout_marginLeft="10dp"
             android:layout_weight="0"
-            app:srcCompat="@drawable/btn_switch_camera" />
+            app:srcCompat="@drawable/username1" />
 
         <EditText
             android:id="@+id/editText_username"
@@ -97,7 +96,7 @@
             android:layout_height="50dp"
             android:layout_marginLeft="10dp"
             android:layout_weight="0"
-            app:srcCompat="@drawable/btn_endcall" />
+            app:srcCompat="@drawable/password" />
 
         <EditText
             android:id="@+id/editText_password"

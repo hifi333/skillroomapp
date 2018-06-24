@@ -1,6 +1,7 @@
 package com.skill.room;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.http.SslError;
@@ -48,6 +49,7 @@ public class LessonActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("--_______________________________-------LessonActivity--  OnCreated....");
 
         loginSessionToken = getIntent().getExtras().getString("loginSessionToken");
 
@@ -130,6 +132,20 @@ public class LessonActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
+            String  samdatafromRoomActivity= data.getExtras().getString("data");
+
+            System.out.println("class over, get result:" + samdatafromRoomActivity);
+            //TODO
+        }
+
+    }
+
+
+
     public void onClick_self(View view){
 
         this.selfview.bringToFront();
@@ -192,6 +208,9 @@ public class LessonActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+
+        System.out.println("--_______________________________-------LessonActivity--  PostCreated....");
+
 
         final WebView  samwebview = new WebView(this.getApplicationContext());
 

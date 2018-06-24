@@ -3,4 +3,9 @@
     <item name="small_video_view_dock" type="id" />
     <item name="full_screen_container" type="id" />
     <item name="customized_function_id" type="id" />
+    <item name="samvideohostwindow" type="id" />
+    <item name="samvideohostpanel" type="id" />
+    <item name="loginimageivewLogo" type="id" />
+
+
 </resources>
