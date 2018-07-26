@@ -15,7 +15,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.SslErrorHandler;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -59,23 +58,10 @@ public class LessonActivity extends AppCompatActivity {
 
         FrameLayout samwebViewframeContainer = (FrameLayout)this.findViewById(R.id.webviewFrameContainer);
 
-        SamWebviewClient samWebviewClient1 = new SamWebviewClient();
         FrameLayout.LayoutParams webviewLayout = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT,1);
 
 
         lesstableView = new WebView(this.getApplicationContext());
-
-
-        //注册roomActivity 的本地对象给lessionh5, 当选中课堂后, 回调回来, 进入相应的roomActivity, 必须在loadURL之前啊.
-        System.out.println("---------注册JsCallbackObject 给Lessonwebview: as " + "skillroom");
-        lesstableView.addJavascriptInterface(new JsCallbackObject(this), "skillroom");//JsCallbackObject类的一个实例,映射到js的skillroom对象, 在js的方法里就可以直接用了.
-
-
-        lesstableView.setLayoutParams(webviewLayout);
-        lesstableView.getSettings().setJavaScriptEnabled(true);
-        lesstableView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        lesstableView.loadUrl("http://122.152.210.96/lessionh5.html");
-        samwebViewframeContainer.addView(lesstableView);
 
         lesstableView.setWebViewClient(new WebViewClient() {
             @Override
@@ -89,15 +75,17 @@ public class LessonActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
 
-                System.out.println("----------lessionh5.html load ok.");
+                System.out.println("native:-----lessionh5.html load ok.");
 
                 lesstableView.loadUrl("javascript:hi()");
 
-                System.out.println("---------js hi ok");
+                System.out.println("native--js hi() call test ok");
 
 
                 //调用js 方法
-                lesstableView.loadUrl("javascript:tobeCalledfromLoginActivity('" +loginSessionToken + "')");
+                System.out.println("native--js call:loginActivity_callwebviewjs_showLessionCalendarView()");
+
+                lesstableView.loadUrl("javascript:loginActivity_callwebviewjs_showLessionCalendarView('" +loginSessionToken + "')");
 
             }
 
@@ -105,28 +93,42 @@ public class LessonActivity extends AppCompatActivity {
 
 
 
+        //注册roomActivity 的本地对象给lessionh5, 当选中课堂后, 回调回来, 进入相应的roomActivity, 必须在loadURL之前啊.
+        System.out.println("native: 注册JsCallbackObject给Lessonwebview: as " + "skillroom");
 
 
-        gtkView = new WebView(this.getApplicationContext());
-        gtkView.setWebViewClient(samWebviewClient1);
-        gtkView.setLayoutParams(webviewLayout);
-        gtkView.loadUrl("http://www.youdao.com");
-        samwebViewframeContainer.addView(gtkView);
+        lesstableView.getSettings().setJavaScriptEnabled(true);
+        lesstableView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        lesstableView.loadUrl("http://122.152.210.96/lessionh5.html");
+        lesstableView.addJavascriptInterface(new JsCallbackObject_Lesson(this), "skillroom");//JsCallbackObject类的一个实例,映射到js的skillroom对象, 在js的方法里就可以直接用了.
+
+        lesstableView.setLayoutParams(webviewLayout);
+        samwebViewframeContainer.addView(lesstableView);
 
 
-        web3 = new WebView(this.getApplicationContext());
-        web3.setWebViewClient(samWebviewClient1);
-        web3.setLayoutParams(webviewLayout);
-        web3.loadUrl("http://www.qq.com");
-        samwebViewframeContainer.addView(web3);
 
-
-        selfview = new WebView(this.getApplicationContext());
-        selfview.setWebViewClient(samWebviewClient1);
-        selfview.setLayoutParams(webviewLayout);
-        selfview.loadUrl("http://www.ifeng.com");
-        samwebViewframeContainer.addView(selfview);
-
+//
+//
+//        gtkView = new WebView(this.getApplicationContext());
+//        gtkView.setWebViewClient(samWebviewClient1);
+//        gtkView.setLayoutParams(webviewLayout);
+//        gtkView.loadUrl("http://www.youdao.com");
+//        samwebViewframeContainer.addView(gtkView);
+//
+//
+//        web3 = new WebView(this.getApplicationContext());
+//        web3.setWebViewClient(samWebviewClient1);
+//        web3.setLayoutParams(webviewLayout);
+//        web3.loadUrl("http://www.qq.com");
+//        samwebViewframeContainer.addView(web3);
+//
+//
+//        selfview = new WebView(this.getApplicationContext());
+//        selfview.setWebViewClient(samWebviewClient1);
+//        selfview.setLayoutParams(webviewLayout);
+//        selfview.loadUrl("http://www.ifeng.com");
+//        samwebViewframeContainer.addView(selfview);
+//
 
 
     }
@@ -179,39 +181,13 @@ public class LessonActivity extends AppCompatActivity {
 
 
 
-    class SamWebviewClient extends  WebViewClient{
-
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            return super.shouldOverrideUrlLoading(view, request);
-        }
-
-
-
-
-
-        @Override
-        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error){
-
-            //handler.cancel(); 默认的处理方式，WebView变成空白页
-            handler.proceed();  //接受证书, 这样https 都能打开了.
-        }
-
-
-
-
-    }
-
-
-
-
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
         System.out.println("--_______________________________-------LessonActivity--  PostCreated....");
 
-
+/*
         final WebView  samwebview = new WebView(this.getApplicationContext());
 
 
@@ -227,7 +203,7 @@ public class LessonActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
 
-//                System.out.println("----------哈啊哈, 终于load 成功了.");
+                System.out.println("native:--哈啊哈, 终于load bundle_app.js for room 成功了.");
 //
 //                samwebview.loadUrl("javascript:hi()");
 //
@@ -256,20 +232,19 @@ public class LessonActivity extends AppCompatActivity {
 
 
         //注册roomActivity 的本地对象给roomwhiteboard, 必须在loadURL之前啊.
-        System.out.println("---------注册JsCallbackObject 给Lessonwebview: as " + "skillroom");
-        samwebview.addJavascriptInterface(new JsCallbackObject(this), "skillroom");//JsCallbackObject类的一个实例,映射到js的skillroom对象, 在js的方法里就可以直接用了.
+        System.out.println("native:---注册JsCallbackObject samwebview-roomview: as " + "skillroom");
+        samwebview.addJavascriptInterface(new JsCallbackObject_Lesson(this), "skillroom");//JsCallbackObject类的一个实例,映射到js的skillroom对象, 在js的方法里就可以直接用了.
 
 
         samwebview.getSettings().setJavaScriptEnabled(true);
         samwebview.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
         samwebview.loadUrl("http://122.152.210.96/index_app.html");
-
-//        samwebview.loadUrl("http://www.yahoo.com");
-
         ((RoomApplication)this.getApplication()).samRoomWebView = samwebview;
 
-        System.out.println("-------------- cached webiew ok");
+*/
+
+
 
 
         //请求权限啊...

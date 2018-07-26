@@ -32,9 +32,11 @@
             android:layout_alignParentTop="true"
             android:layout_marginRight="10dp"
             android:layout_marginTop="20dp"
+            android:clickable="true"
             android:ems="10"
             android:gravity="right"
             android:inputType="textPersonName"
+            android:onClick="onclick_newUser"
             android:text="新用户注册"
             tools:text="oooo" />
 
@@ -143,6 +145,8 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="20dp"
+            android:clickable="true"
+            android:onClick="onclick_forgetpassword"
             android:text="忘记密码" />
     </RelativeLayout>
 

@@ -12,7 +12,7 @@
 
     </FrameLayout>
 
-    <LinearLayout
+    <!--LinearLayout
         android:id="@+id/tabpanel"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -58,5 +58,6 @@
             android:layout_weight="1"
             android:onClick="onClick_self"
             app:srcCompat="@drawable/myself" />
-    </LinearLayout>
+
+    </LinearLayout-->
 </LinearLayout>

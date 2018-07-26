@@ -1,20 +1,12 @@
 package com.skill.room;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.http.SslError;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.SurfaceView;
 import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
@@ -22,13 +14,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.skill.voice_vedio.ConstantApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,14 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
 
-import javax.net.ssl.HostnameVerifier;
-
-import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -69,12 +52,14 @@ public class AppLoginActivity extends AppCompatActivity {
 
         loginimageivewLogo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-        loginimageivewLogo.setImageResource(R.drawable.samtuzi);
+        //loginimageivewLogo.setImageResource(R.drawable.gkttuzi);
 
 
 
 
     }
+
+
 
     public static Bitmap getHttpBitmap(String url){
         URL myFileURL;
@@ -104,6 +89,37 @@ public class AppLoginActivity extends AppCompatActivity {
         return bitmap;
 
     }
+
+    public void onclick_newUser(View view){
+
+
+        System.out.println("new user.");
+
+
+        Intent i = new Intent(AppLoginActivity.this, NewUser.class);
+
+        startActivity(i);
+
+
+
+
+    }
+
+    public void onclick_forgetpassword(View view){
+
+
+        Intent i = new Intent(AppLoginActivity.this, NewUser.class);
+
+        i.putExtra("mobilenumber", "13958003839");
+        i.putExtra("tip", "请输入手机号");
+
+        startActivity(i);
+
+
+
+    }
+
+
 
     public void onclick_login(View view){
 
@@ -202,6 +218,58 @@ public class AppLoginActivity extends AppCompatActivity {
 
 
         }
+
+
+
+    }
+
+
+
+
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        System.out.println("--_______________________________AooLoginAcitivity PostCreated....");
+
+
+        final WebView  samwebview = new WebView(this.getApplicationContext());
+
+
+        samwebview.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error){
+
+                //handler.cancel(); 默认的处理方式，WebView变成空白页
+                handler.proceed();  //接受证书, 这样https 都能打开了.
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+
+                System.out.println("native:--哈啊哈, 终于load bundle_app.js for room 成功了.");
+
+
+            }
+
+        });
+
+
+        //注册roomActivity 的本地对象给roomwhiteboard, 必须在loadURL之前啊.
+        System.out.println("native:---注册JsCallbackObject samwebview-roomview: as " + "skillroom");
+        samwebview.addJavascriptInterface(new JsCallbackObject_Room(this), "skillroom");//JsCallbackObject类的一个实例,映射到js的skillroom对象, 在js的方法里就可以直接用了.
+
+
+        samwebview.getSettings().setJavaScriptEnabled(true);
+        samwebview.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+
+        samwebview.loadUrl("http://122.152.210.96/index_app.html");
+        RoomApplication.samRoomWebView = samwebview;
+
+
+
 
 
 

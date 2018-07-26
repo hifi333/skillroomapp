@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/textView_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="80dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="收不到验证码？"
+        android:textColor="@android:color/background_dark"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView_solutions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView_zizhujiejie"
+        android:layout_below="@+id/textView_zizhujiejie"
+        android:layout_marginTop="14dp"
+        android:text="1）可能是通信网络异常引起，可以尝试重启手机。\n2）可能手机设置了黑名单，查看路径：手机设置-信息-黑名单。\n3）可能您安装了一些安全或者助手软件对验证码进行了拦截，需要检查安全软件的设置。\n4）可以尝试讲SIM卡换到其他手机上测试。 \n5）可以联系手机号码的运营商进行咨询。"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView_zizhujiejie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView_welcome"
+        android:layout_below="@+id/textView_welcome"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="47dp"
+        android:text="快速自助解决"
+        android:textColor="@android:color/background_dark"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:id="@+id/textView_weixiong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_solutions"
+        android:layout_below="@+id/textView_solutions"
+        android:layout_marginTop="20dp"
+        android:text="若未解决，请联系微信客服"
+        android:textColor="@android:color/background_dark"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/imageView_weixing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_weixiong"
+        android:layout_below="@+id/textView_weixiong"
+        android:layout_marginTop="20dp"
+         />
+
+</RelativeLayout>

@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.SslErrorHandler;
@@ -65,7 +66,7 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
         System.out.println("每次点击上课， 都是重新创建的roomActivity。。。。。。  OnCreate。。。。。。。。。。");
         getSupportActionBar().hide();
-
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.room);
 //
 //
