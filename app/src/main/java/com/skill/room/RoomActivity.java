@@ -59,6 +59,13 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
     boolean isNowJoinroom = false;
     boolean isNowVoiceEnanble = true;
 
+
+    FrameLayout roomMainFrame;
+
+    int oneVideoWinWidth=300;
+    int oneVideoWinHeight=300;
+    boolean videoWin_Verical = true;
+
     Hashtable<Integer, SurfaceView>  userVedioList = new Hashtable();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +81,7 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
 
 
-        FrameLayout samroommain = (FrameLayout) findViewById(R.id.samroommain);
+        roomMainFrame = (FrameLayout) findViewById(R.id.samroommain);
 
 
         FrameLayout.LayoutParams ddd = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
@@ -83,11 +90,17 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
 
         samwebview.setLayoutParams(ddd);
-        samroommain.addView(samwebview);  //cached webView 快速的显示出来了.
+        roomMainFrame.addView(samwebview);  //cached webView 快速的显示出来了.
 
 
 
-       // findViewById(R.id.vedio_scrollView1).bringToFront();
+//        DragScaleScrollContainer dsv = new DragScaleScrollContainer(this.getApplicationContext());
+//        dsv.setLayoutParams(new FrameLayout.LayoutParams(300,200));
+//        samroommain.addView(dsv);
+//        dsv.setClickable(true);
+
+
+        // findViewById(R.id.vedio_scrollView1).bringToFront();
 
 
         getLocalEngineWorkerThread().eventHandler().addEventHandler(this);//有添加， 就要有删除啊。。。
@@ -265,21 +278,21 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
     synchronized private void  updateVedioBar(){
 
 
-        ScrollView sv=  (ScrollView)findViewById(R.id.samvideohostwindow);
+        ScrollView videoScrollView=  (ScrollView)findViewById(R.id.samvideohostwindow);
 
-        if(sv ==null ) {
+        if(videoScrollView ==null ) {
 //        HorizontalScrollView aa = new HorizontalScrollView(this.getApplicationContext());
-            sv = new ScrollView(this.getApplicationContext());
-            sv.setId(R.id.samvideohostwindow);
+            videoScrollView = new ScrollView(this.getApplicationContext());
+            videoScrollView.setId(R.id.samvideohostwindow);
 
-            FrameLayout.LayoutParams svlayoutParams = new FrameLayout.LayoutParams(200,600);
+            FrameLayout.LayoutParams svlayoutParams = new FrameLayout.LayoutParams(oneVideoWinWidth,roomMainFrame.getHeight());
             svlayoutParams.gravity = Gravity.CENTER_VERTICAL | Gravity.RIGHT;
             svlayoutParams.rightMargin=5;
-            sv.setLayoutParams(svlayoutParams);
+            videoScrollView.setLayoutParams(svlayoutParams);
 
-            ((FrameLayout) findViewById(R.id.samroommain)).addView(sv);
-            sv.bringToFront();
-            sv.setBackgroundColor(Color.BLUE);
+            ((FrameLayout) findViewById(R.id.samroommain)).addView(videoScrollView);
+            videoScrollView.bringToFront();
+            videoScrollView.setBackgroundColor(Color.BLUE);
 
 
             //设置window 里面的头像布局。
@@ -292,7 +305,7 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
             hostpanel.setOrientation(LinearLayout.VERTICAL);
             hostpanel.setLayoutParams(hostpanellayoutParams);
 
-            sv.addView(hostpanel);
+            videoScrollView.addView(hostpanel);
 
         }
 
@@ -301,11 +314,11 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
 
         //根据实际的视频window 多少来调整scrollview的宽度， 但有个最大值， 超出来就滚动显示了。
-        int scroolview_height = this.userVedioList.size()*200;
-        if(scroolview_height >=600)  scroolview_height= 610;  //这个最大值， 后面要根据具体设备的宽度来定。
+        int scroolview_height = this.userVedioList.size()*oneVideoWinHeight;
+        if(scroolview_height >roomMainFrame.getHeight())  scroolview_height= roomMainFrame.getHeight();  //这个最大值， 后面要根据具体设备的宽度来定。
 
         System.out.println("heigt...." + scroolview_height);
-        sv.getLayoutParams().height = scroolview_height;
+        videoScrollView.getLayoutParams().height = scroolview_height;
 
 
         //这时候, 这个surfaceV  view 已经有了远程client 的头像啦.  该把这个view 布局到哪里呢?
@@ -314,6 +327,16 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
         LinearLayout  hostpanel =  (LinearLayout) findViewById(R.id.samvideohostpanel);
         hostpanel.removeAllViews();
+
+
+//
+//        DragScaleView dsv = new DragScaleView(this.getApplicationContext());
+//        dsv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,200));
+//        hostpanel.addView(dsv);
+//        dsv.setClickable(true);
+
+
+
         Iterator iterator = this.userVedioList.keySet().iterator();
         int k=0;
         while (iterator.hasNext()) {
@@ -323,7 +346,7 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
             {
                 SurfaceView surfaceV = this.userVedioList.get(uid);
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, 200);
+                        LinearLayout.LayoutParams.MATCH_PARENT, oneVideoWinHeight);
 
                 layoutParams.setMargins(0, 0,0, 5);
 

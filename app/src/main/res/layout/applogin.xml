@@ -110,13 +110,38 @@
             android:inputType="numberPassword" />
     </LinearLayout>
 
+
+    <LinearLayout
+        android:id="@+id/errormessagepanel"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="0dp"
+        android:layout_weight="0"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView_errormsg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:clickable="false"
+            />
+
+    </LinearLayout>
+
+
     <LinearLayout
         android:id="@+id/action"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="0dp"
         android:layout_weight="0"
         android:orientation="horizontal">
 
@@ -148,6 +173,8 @@
             android:clickable="true"
             android:onClick="onclick_forgetpassword"
             android:text="忘记密码" />
+
+
     </RelativeLayout>
 
 </LinearLayout>

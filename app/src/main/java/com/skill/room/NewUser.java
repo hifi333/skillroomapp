@@ -27,33 +27,29 @@ public class NewUser extends AppCompatActivity implements View.OnClickListener{
 
         getSupportActionBar().hide();
 
-        String mobilenumber = "";
-        String forgetPasswordtip = "";
-
-        if(getIntent().getExtras() !=null) {
-            mobilenumber = getIntent().getExtras().getString("mobilenumber");
-            forgetPasswordtip = getIntent().getExtras().getString("tip");
-        }
-
 
         Button button_nextstop = (Button) findViewById(R.id.button_nextstep);
 
         button_nextstop.setOnClickListener(this);
 
-        TextView  welcome =(TextView) findViewById(R.id.textView_welcome);
-        TextView  mobiletip =(TextView) findViewById(R.id.textView_solutions);
-
-        EditText edit_mobile =(EditText) findViewById(R.id.editText_mobile);
 
 
+        if(getIntent().getExtras() !=null) {
+             String tip_for_forgetPasword = getIntent().getExtras().getString("tip");
 
-        if(mobilenumber.length() >0) edit_mobile.setText(mobilenumber);
-        if(forgetPasswordtip.length() >0) welcome.setText(forgetPasswordtip);
+             if(tip_for_forgetPasword ==null)
+                 tip_for_forgetPasword = "新用户注册";
+
+            ( (TextView) findViewById(R.id.textView_welcome)).setText(tip_for_forgetPasword);
+
+
+
+        }
 
 
 
 
-    }
+        }
 
 
     @Override
@@ -71,14 +67,28 @@ public class NewUser extends AppCompatActivity implements View.OnClickListener{
 
     private void nextstep(){
 
-        //todo
+        EditText edit_mobile =(EditText) findViewById(R.id.editText_mobile);
 
-        System.out.println("new user.");
+        String newUserMobile = edit_mobile.getText().toString();
+        System.out.println("new user：" + newUserMobile);
+
+        try {
+            Long.parseLong(newUserMobile);
 
 
-        Intent i = new Intent(NewUser.this, Yanzhengma.class);
+            Intent i = new Intent(NewUser.this, Yanzhengma.class);
+            i.putExtra("mobilenumber", newUserMobile);
+            startActivity(i);
 
-        startActivity(i);
+
+
+        }catch (Exception ee) {
+            ee.printStackTrace();
+
+            //todo
+            //error prompt to gui
+        }
+
 
 
     }

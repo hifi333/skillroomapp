@@ -6,34 +6,43 @@
     android:layout_height="match_parent">
 
 
+
+    <!--<com.skill.room.DragScaleView-->
+        <!--android:id="@+id/ds"-->
+        <!--android:layout_width="180dip"-->
+        <!--android:layout_height="180dip"-->
+        <!--android:clickable="true" />-->
+
+
+
     <!--<WebView-->
     <!--android:id="@+id/samwebview1"-->
     <!--android:layout_width="match_parent"-->
     <!--android:layout_height="match_parent"-->
     <!--android:background="@color/agora_blue" />-->
 
-    <HorizontalScrollView
-        android:id="@+id/vedio_scrollView1"
-        android:layout_width="100dp"
-        android:layout_height="300dp"
+    <!--<HorizontalScrollView-->
+        <!--android:id="@+id/vedio_scrollView1"-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="300dp"-->
 
-        android:layout_gravity="right|center_vertical"
-        android:layout_marginRight="5dp">
+        <!--android:layout_gravity="right|center_vertical"-->
+        <!--android:layout_marginRight="5dp">-->
 
-        <LinearLayout
-            android:id="@+id/samvedioviewfly"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <!--<ImageView-->
-            <!--android:id="@+id/imageView1"-->
-            <!--android:layout_width="80dp"-->
+        <!--<LinearLayout-->
+            <!--android:id="@+id/samvedioviewfly"-->
+            <!--android:layout_width="match_parent"-->
             <!--android:layout_height="match_parent"-->
-            <!--android:cropToPadding="false"-->
-            <!--android:scaleType="center"-->
-            <!--app:srcCompat="@android:color/darker_gray" />-->
-        </LinearLayout>
-    </HorizontalScrollView>
+            <!--android:orientation="horizontal">-->
+
+            <!--&lt;!&ndash;<ImageView&ndash;&gt;-->
+            <!--&lt;!&ndash;android:id="@+id/imageView1"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="80dp"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:cropToPadding="false"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:scaleType="center"&ndash;&gt;-->
+            <!--&lt;!&ndash;app:srcCompat="@android:color/darker_gray" />&ndash;&gt;-->
+        <!--</LinearLayout>-->
+    <!--</HorizontalScrollView>-->
 
 </FrameLayout>

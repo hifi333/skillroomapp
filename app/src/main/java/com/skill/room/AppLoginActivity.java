@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.http.SslError;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +43,23 @@ public class AppLoginActivity extends AppCompatActivity {
 
     private final static Logger log = LoggerFactory.getLogger(AppLoginActivity.class);
 
-    @Override
+
+    String guimessage ="";
+    final Handler cwjHandler = new Handler();
+
+    final Runnable mUpdateResults = new Runnable() {
+        public void run() {
+            updateUI();
+        }
+    };
+
+    private void updateUI() {
+
+         ((TextView)findViewById(R.id.textView_errormsg)).setText(guimessage);
+
+    }
+
+        @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -52,7 +70,7 @@ public class AppLoginActivity extends AppCompatActivity {
 
         loginimageivewLogo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-        //loginimageivewLogo.setImageResource(R.drawable.gkttuzi);
+        loginimageivewLogo.setImageResource(R.drawable.samtuzi);
 
 
 
@@ -110,8 +128,7 @@ public class AppLoginActivity extends AppCompatActivity {
 
         Intent i = new Intent(AppLoginActivity.this, NewUser.class);
 
-        i.putExtra("mobilenumber", "13958003839");
-        i.putExtra("tip", "请输入手机号");
+        i.putExtra("tip", "找回密码");
 
         startActivity(i);
 
@@ -206,7 +223,12 @@ public class AppLoginActivity extends AppCompatActivity {
                             startActivity(i);
                         }else
                         {
-                            System.out.println( userid + " login没有拿到token, 请坚持用户名或密码是否正确.");
+                            guimessage = "尝试登陆失败了, 请检查用户名或密码，再试一次.";
+
+                            cwjHandler.post(mUpdateResults); //高速UI线程可以更新结果了
+
+                            // Only the original thread that created a view hierarchy can touch its views
+                            // ((EditText)findViewById(R.id.editText_username)).setText("login没有拿到token, 请检查用户名或密码是否正确");
 
                         }
 
