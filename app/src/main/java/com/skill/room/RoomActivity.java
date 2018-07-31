@@ -25,6 +25,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -38,6 +39,7 @@ import com.skill.voice_vedio.ServerEngineEventHandler_ActivityCallBackHander;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -54,7 +56,7 @@ import io.agora.rtc.video.VideoCanvas;
 public class RoomActivity extends AppCompatActivity implements ServerEngineEventHandler_ActivityCallBackHander {
     private final static Logger log = LoggerFactory.getLogger(RoomActivity.class);
 
-    String userId ="11";
+    int  myselfuid =0;
     boolean isNowVedioEnable = true;
     boolean isNowJoinroom = false;
     boolean isNowVoiceEnanble = true;
@@ -189,6 +191,7 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
     @Override
     public void onJoinChannelSuccess(String channel, final int uid, int elapsed) {
 
+        this.myselfuid= uid;
         log.debug("我也加入 channel 啦."+ uid);
         runOnUiThread(new Runnable() {  //GUI click event 线程里不能直接干重的活啊, 再起一个新的线程去做, 用户就不会体感卡死了.
             @Override
@@ -278,21 +281,21 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
     synchronized private void  updateVedioBar(){
 
 
-        ScrollView videoScrollView=  (ScrollView)findViewById(R.id.samvideohostwindow);
+        DragResizeScroolView videoScrollView=  (DragResizeScroolView)findViewById(R.id.samvideohostwindow);
 
         if(videoScrollView ==null ) {
 //        HorizontalScrollView aa = new HorizontalScrollView(this.getApplicationContext());
-            videoScrollView = new ScrollView(this.getApplicationContext());
+            videoScrollView = new DragResizeScroolView(this.getApplicationContext());
             videoScrollView.setId(R.id.samvideohostwindow);
 
-            FrameLayout.LayoutParams svlayoutParams = new FrameLayout.LayoutParams(oneVideoWinWidth,roomMainFrame.getHeight());
+            FrameLayout.LayoutParams svlayoutParams = new FrameLayout.LayoutParams(oneVideoWinWidth,oneVideoWinHeight);
             svlayoutParams.gravity = Gravity.CENTER_VERTICAL | Gravity.RIGHT;
             svlayoutParams.rightMargin=5;
             videoScrollView.setLayoutParams(svlayoutParams);
 
             ((FrameLayout) findViewById(R.id.samroommain)).addView(videoScrollView);
             videoScrollView.bringToFront();
-            videoScrollView.setBackgroundColor(Color.BLUE);
+            videoScrollView.setBackgroundColor(Color.GRAY);
 
 
             //设置window 里面的头像布局。
@@ -307,11 +310,22 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
             videoScrollView.addView(hostpanel);
 
+            videoScrollView.setFillViewport(true);//非常重要，要不然内部的linearlayout 拿不到高度。 那就只能给子控件设置具体的高度了。
+            // 但是一旦指定了具体的高度，整个scrollView的resize， 子控件的高度就不变化了。  所有要想resize，就必须设置setFillViewport(true)， 但这样
+            //滚动条似乎又出不来拉。
+
+
+            //滚动条出不来啊
+//            videoScrollView.setScrollbarFadingEnabled(false);
+//            videoScrollView.setVerticalScrollBarEnabled(true);
+
+
+
         }
 
 
 
-
+/*
 
         //根据实际的视频window 多少来调整scrollview的宽度， 但有个最大值， 超出来就滚动显示了。
         int scroolview_height = this.userVedioList.size()*oneVideoWinHeight;
@@ -319,44 +333,73 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 
         System.out.println("heigt...." + scroolview_height);
         videoScrollView.getLayoutParams().height = scroolview_height;
-
+*/
 
         //这时候, 这个surfaceV  view 已经有了远程client 的头像啦.  该把这个view 布局到哪里呢?
 //        LinearLayout kk = (LinearLayout) findViewById(R.id.samvedioviewfly);
 
 
         LinearLayout  hostpanel =  (LinearLayout) findViewById(R.id.samvideohostpanel);
+        int childtotal = hostpanel.getChildCount();
+        for(int i=0;i<childtotal;i++)
+        {
+            FrameLayout aa = (FrameLayout)hostpanel.getChildAt(i);
+            aa.removeAllViews();
+        }
         hostpanel.removeAllViews();
 
-
-//
-//        DragScaleView dsv = new DragScaleView(this.getApplicationContext());
-//        dsv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,200));
-//        hostpanel.addView(dsv);
-//        dsv.setClickable(true);
-
-
+        int eachVideoWinHeight =1;
+        if( this.userVedioList.size() >0)
+         eachVideoWinHeight = videoScrollView.getLayoutParams().height / this.userVedioList.size();
 
         Iterator iterator = this.userVedioList.keySet().iterator();
-        int k=0;
-        while (iterator.hasNext()) {
 
+        ArrayList keys = new ArrayList();
+        keys.add(this.myselfuid);  //自己放到显示的第一个
+        while (iterator.hasNext()) {
             int uid = (int)iterator.next();
-            if(uid!=0)  //本地preview的
+            if(uid !=this.myselfuid)
+                keys.add(uid);
+        }
+
+
+           for(int i=0;i<keys.size();i++) {
+
+            int uid = (int)keys.get(i);
+            if(uid!=0)  //本地preview的除外
             {
                 SurfaceView surfaceV = this.userVedioList.get(uid);
+
+                if(surfaceV == null)  continue;
+
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT, oneVideoWinHeight);
+                        LinearLayout.LayoutParams.MATCH_PARENT,0,1.0f);
+
 
                 layoutParams.setMargins(0, 0,0, 5);
+//                surfaceV.setLayoutParams(layoutParams);
+//                hostpanel.addView(surfaceV);
 
-//                layoutParams.setLayoutDirection(LinearLayout.VERTICAL);
-                surfaceV.setLayoutParams(layoutParams);
+
+                FrameLayout  SurfaceViewContainer = new FrameLayout(this.getApplicationContext());
+                SurfaceViewContainer.setLayoutParams(layoutParams);
+                hostpanel.addView(SurfaceViewContainer);
 
 
-                  hostpanel.addView(surfaceV);
+               // surfaceV.setLayoutParams(layoutParams);
+                SurfaceViewContainer.addView(surfaceV);
 
-                k++;
+
+                if(uid == myselfuid) {
+                    Button haha = new Button(this.getApplicationContext());
+                    FrameLayout.LayoutParams svlayoutParams = new FrameLayout.LayoutParams(100, 100);
+                    haha.setLayoutParams(svlayoutParams);
+
+                    haha.setText("m");
+                    SurfaceViewContainer.addView(haha);
+                }
+
+
                 System.out.println("add surfaceV...." + surfaceV.toString());
 
             }
