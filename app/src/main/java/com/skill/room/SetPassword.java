@@ -97,7 +97,7 @@ public class SetPassword extends AppCompatActivity implements View.OnClickListen
         MediaType media = MediaType.parse("application/json; charset=utf-8");
         RequestBody formBody = RequestBody.create(media, meta.toString());
         Request request = new Request.Builder()
-                .url("http://www.gkt6.com/createuser")
+                .url("https://gkt6.com/createuser")
                 .post(formBody)//传递POST请求体, 同时决定用POST
                 .build();
         client.newCall(request).enqueue(new Callback() {

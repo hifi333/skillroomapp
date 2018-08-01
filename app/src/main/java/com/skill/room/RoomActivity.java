@@ -288,7 +288,10 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
             videoScrollView = new DragResizeScroolView(this.getApplicationContext());
             videoScrollView.setId(R.id.samvideohostwindow);
 
-            FrameLayout.LayoutParams svlayoutParams = new FrameLayout.LayoutParams(oneVideoWinWidth,oneVideoWinHeight);
+            int initHeight= oneVideoWinHeight;
+            if(this.userVedioList.size() !=0)
+                initHeight = oneVideoWinHeight * this.userVedioList.size();
+            FrameLayout.LayoutParams svlayoutParams = new FrameLayout.LayoutParams(oneVideoWinWidth,initHeight);
             svlayoutParams.gravity = Gravity.CENTER_VERTICAL | Gravity.RIGHT;
             svlayoutParams.rightMargin=5;
             videoScrollView.setLayoutParams(svlayoutParams);
@@ -452,6 +455,7 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
             getLocalEngineWorkerThread().getRtcEngine().leaveChannel();
             this.userVedioList.clear();  //我已经退出啦, 别人的视频我也看不到了, 关闭所有本地窗口.
             this.isNowJoinroom = false;
+            hideVideoBar();
         }
         else {
 //            getLocalEngineWorkerThread().getRtcEngine().enableVideo();
@@ -468,6 +472,7 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
             getLocalEngineWorkerThread().getRtcEngine().joinChannel(null,channel, "skill",usernumber);
 
             this.isNowJoinroom = true;
+            showVideoBar();
 
         }
 
@@ -525,6 +530,23 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
     }
 
 
+    private void showVideoBar() {
+
+        ScrollView sv=  (ScrollView)findViewById(R.id.samvideohostwindow);
+        if(sv!=null) sv.setVisibility(View.VISIBLE);
+
+
+    }
+
+
+    private void hideVideoBar() {
+
+        ScrollView sv=  (ScrollView)findViewById(R.id.samvideohostwindow);
+        if(sv!=null) sv.setVisibility(View.INVISIBLE);
+
+
+    }
+
     public void onclick_hidevideowin() {
 
         ScrollView sv=  (ScrollView)findViewById(R.id.samvideohostwindow);
@@ -534,11 +556,12 @@ public class RoomActivity extends AppCompatActivity implements ServerEngineEvent
 //        sv.setVisibility(View.VISIBLE);
 //        sv.setVisibility(View.INVISIBLE);
 
-          if(sv.getVisibility() == View.VISIBLE)
-              sv.setVisibility(View.INVISIBLE);
-          else if(sv.getVisibility() == View.INVISIBLE)
-              sv.setVisibility(View.VISIBLE);
-
+        if(sv!=null) {
+            if (sv.getVisibility() == View.VISIBLE)
+                sv.setVisibility(View.INVISIBLE);
+            else if (sv.getVisibility() == View.INVISIBLE)
+                sv.setVisibility(View.VISIBLE);
+        }
 //
 //        if(isNowVoiceEnanble) {
 //            getLocalEngineWorkerThread().getRtcEngine().muteLocalAudioStream(true);

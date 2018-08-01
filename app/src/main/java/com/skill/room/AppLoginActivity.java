@@ -184,7 +184,7 @@ public class AppLoginActivity extends AppCompatActivity {
 
             Request request = new Request.Builder()
 //                    .url("https://122.152.210.96:8443/login")
-                    .url("http://122.152.210.96/login")
+                    .url("https://gkt6.com/login")
                     .post(formBody)//传递POST请求体, 同时决定用POST
                     .build();
             client.newCall(request).enqueue(new Callback() {
@@ -232,9 +232,13 @@ public class AppLoginActivity extends AppCompatActivity {
 
                         }
 
-                    }else
+                    }else {
                         System.out.println("response.isSuccessful() failed:" + response.isSuccessful());
+                        guimessage = "连接服务器失败了, 请检查网络，再试.";
+                        cwjHandler.post(mUpdateResults); //高速UI线程可以更新结果了
 
+
+                    }
                 }
             });
 
@@ -287,7 +291,7 @@ public class AppLoginActivity extends AppCompatActivity {
         samwebview.getSettings().setJavaScriptEnabled(true);
         samwebview.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
-        samwebview.loadUrl("http://122.152.210.96/index_app.html");
+        samwebview.loadUrl("https://gkt6.com/index_app.html");
         RoomApplication.samRoomWebView = samwebview;
 
 

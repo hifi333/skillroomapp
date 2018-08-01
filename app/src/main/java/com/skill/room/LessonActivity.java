@@ -99,7 +99,7 @@ public class LessonActivity extends AppCompatActivity {
 
         lesstableView.getSettings().setJavaScriptEnabled(true);
         lesstableView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        lesstableView.loadUrl("http://122.152.210.96/lessionh5.html");
+        lesstableView.loadUrl("https://gkt6.com/lessonh5.html");
         lesstableView.addJavascriptInterface(new JsCallbackObject_Lesson(this), "skillroom");//JsCallbackObject类的一个实例,映射到js的skillroom对象, 在js的方法里就可以直接用了.
 
         lesstableView.setLayoutParams(webviewLayout);
